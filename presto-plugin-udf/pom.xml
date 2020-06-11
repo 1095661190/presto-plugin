@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>presto-root</artifactId>
+        <artifactId>presto-plugin</artifactId>
         <groupId>io.prestosql</groupId>
         <version>331</version>
     </parent>
@@ -12,17 +12,16 @@
     <artifactId>presto-plugin-udf</artifactId>
     <packaging>presto-plugin</packaging>
 
-
-<!--    <properties>
-        <air.main.basedir>${project.parent.basedir}</air.main.basedir>
-    </properties>-->
+    <!--    <properties>
+            <air.main.basedir>${project.parent.basedir}</air.main.basedir>
+        </properties>-->
 
     <properties>
         <air.check.skip-all>true</air.check.skip-all>
     </properties>
 
-
     <dependencies>
+        <!--
         <dependency>
             <groupId>io.airlift</groupId>
             <artifactId>bootstrap</artifactId>
@@ -36,6 +35,13 @@
         <dependency>
             <groupId>io.airlift</groupId>
             <artifactId>configuration</artifactId>
+</dependency>
+        -->
+
+        <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>slice</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -43,36 +49,29 @@
             <artifactId>guava</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-        </dependency>
+        <!--  <dependency>
+              <groupId>com.google.inject</groupId>
+              <artifactId>guice</artifactId>
+          </dependency>
 
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-        </dependency>
+          <dependency>
+              <groupId>javax.validation</groupId>
+              <artifactId>validation-api</artifactId>
+          </dependency>
 
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-        </dependency>
-
+          <dependency>
+              <groupId>javax.inject</groupId>
+              <artifactId>javax.inject</artifactId>
+          </dependency>
+  -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
 
-        <!-- Presto SPI -->
         <dependency>
             <groupId>io.prestosql</groupId>
             <artifactId>presto-spi</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>slice</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -95,26 +94,26 @@
         <!--&lt;!&ndash;            <scope>test</scope>&ndash;&gt;-->
         <!--        </dependency>-->
 
+        <!--     <dependency>
+                 <groupId>io.airlift</groupId>
+                 <artifactId>testing</artifactId>
+             </dependency>
 
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>testing</artifactId>
-        </dependency>
+             <dependency>
+                 <groupId>io.airlift</groupId>
+                 <artifactId>http-server</artifactId>
+             </dependency>
 
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>http-server</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.airlift</groupId>
-            <artifactId>node</artifactId>
-        </dependency>
+             <dependency>
+                 <groupId>io.airlift</groupId>
+                 <artifactId>node</artifactId>
+             </dependency>-->
 
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
+
         <dependency>
             <groupId>io.prestosql</groupId>
             <artifactId>presto-main</artifactId>
@@ -126,7 +125,7 @@
             <artifactId>commons-codec</artifactId>
             <version>1.9</version>
         </dependency>
-    </dependencies>
 
+    </dependencies>
 
 </project>
