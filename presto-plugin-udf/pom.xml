@@ -115,22 +115,21 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>io.prestosql</groupId>
+            <artifactId>presto-main</artifactId>
+        </dependency>
+
      <!--   <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>-->
 
-        <dependency>
-            <groupId>io.prestosql</groupId>
-            <artifactId>presto-main</artifactId>
-            <!--<version>331</version>-->
-        </dependency>
-
-        <dependency>
+      <!--  <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>1.9</version>
-        </dependency>
+        </dependency>-->
 
     </dependencies>
 
