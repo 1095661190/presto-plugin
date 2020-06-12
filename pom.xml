@@ -1258,12 +1258,12 @@
         <extensions>true</extensions>
       </plugin>
 
-      <plugin>
+   <!--   <plugin>
         <groupId>ca.vanzyl.maven.plugins</groupId>
         <artifactId>provisio-maven-plugin</artifactId>
         <version>1.0.7</version>
         <extensions>true</extensions>
-      </plugin>
+      </plugin>-->
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1357,14 +1357,14 @@
               </annotationProcessorPaths>
             </configuration>
           </plugin>
-<!--
+
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
             <configuration>
               <skip>true</skip>
             </configuration>
-          </plugin>-->
+          </plugin>
 
         </plugins>
       </build>
