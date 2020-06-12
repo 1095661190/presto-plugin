@@ -1,4 +1,9 @@
-presto plugin  udf
+presto plugin
+
+
+udf plugin   
+
+    module: presto-plugin-udf
 
 跳过checkstyle 检查  
 https://github.com/airlift/airbase  
