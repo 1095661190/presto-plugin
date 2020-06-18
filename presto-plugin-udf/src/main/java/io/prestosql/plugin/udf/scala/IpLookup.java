@@ -21,6 +21,7 @@ import io.airlift.slice.Slices;
 import io.prestosql.spi.function.Description;
 import io.prestosql.spi.function.ScalarFunction;
 import io.prestosql.spi.function.SqlType;
+import io.prestosql.spi.type.StandardTypes;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,8 +51,8 @@ public class IpLookup
 
     @Description(value = "country or city lookup from ip")
     @ScalarFunction
-    @SqlType(value = "varchar")
-    public static Slice geoip(@SqlType(value = "varchar") Slice category, @SqlType(value = "varchar") Slice ip)
+    @SqlType(StandardTypes.VARCHAR)
+    public static Slice geoip(@SqlType(StandardTypes.VARCHAR) Slice category, @SqlType(StandardTypes.VARCHAR) Slice ip)
     {
         if (category == null || ip == null) {
             return null;
