@@ -32,22 +32,22 @@ public class GeoipTest
     private static final String COUNTRY_DATA_FILE = "GeoIP2-Country.mmdb";
     private static final Charset charset = StandardCharsets.UTF_8;
 
-//    private static final DatabaseReader country = createDatabaseReader(new File("/Users/happyelements/Documents/workspace/presto-plugin/presto-plugin-udf/src/main/resources/" + COUNTRY_DATA_FILE));
+    private static final DatabaseReader country = createDatabaseReader(new File("/Users/happyelements/Documents/workspace/presto-plugin/presto-plugin-udf/src/main/resources/" + COUNTRY_DATA_FILE));
     private static final DatabaseReader city = createDatabaseReader(new File("/Users/happyelements/Documents/workspace/presto-plugin/presto-plugin-udf/src/main/resources/" + CITY_DATA_FILE));
 
-    private static final DatabaseReader country = createDatabaseReader(GeoipTest.class.getClassLoader().getResourceAsStream(COUNTRY_DATA_FILE));
+//    private static final DatabaseReader country = createDatabaseReader(GeoipTest.class.getClassLoader().getResourceAsStream(COUNTRY_DATA_FILE));
 
     public static void main(String[] args)
     {
 //        String ip = "220.181.38.148";
         //String ip = "172.217.174.110";
-        String ip="37.48.206.92"; //Syria
+        String ip="190.89.207.248";
         Charset charset = StandardCharsets.UTF_8;
         System.out.println(geoip(Slices.copiedBuffer("country", charset), Slices.copiedBuffer(ip, charset)).toStringUtf8());
-        System.out.println(geoip(Slices.copiedBuffer("city", charset), Slices.copiedBuffer(ip, charset)).toStringUtf8());
-        System.out.println(geoip(Slices.copiedBuffer("latitude", charset), Slices.copiedBuffer(ip, charset)).toStringUtf8());
-        System.out.println(geoip(Slices.copiedBuffer("longitude", charset), Slices.copiedBuffer(ip, charset)).toStringUtf8());
-        System.out.println(geoip(Slices.copiedBuffer("region", charset), Slices.copiedBuffer(ip, charset)).toStringUtf8());
+
+        System.out.println(GeoIP2.geoip(Slices.copiedBuffer("country", charset), Slices.copiedBuffer(ip, charset)).toStringUtf8());
+
+
     }
 
     /**

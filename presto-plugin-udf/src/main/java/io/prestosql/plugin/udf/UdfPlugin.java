@@ -14,10 +14,7 @@
 package io.prestosql.plugin.udf;
 
 import com.google.common.collect.ImmutableSet;
-import io.prestosql.plugin.udf.scala.CastTimeZone;
-import io.prestosql.plugin.udf.scala.GeoIP2;
-import io.prestosql.plugin.udf.scala.IpLookup;
-import io.prestosql.plugin.udf.scala.Unbase64;
+import io.prestosql.plugin.udf.scala.*;
 import io.prestosql.spi.Plugin;
 
 import java.util.Set;

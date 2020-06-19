@@ -35,7 +35,7 @@ import java.util.Date;
  * </ul>
  *
  * @author Matt Tucker
- * @see LookupService#getDatabaseInfo()
+ * @see LookupService_bak#getDatabaseInfo()
  */
 public class DatabaseInfo
 {

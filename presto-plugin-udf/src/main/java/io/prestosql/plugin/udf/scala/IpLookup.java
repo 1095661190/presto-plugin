@@ -25,26 +25,87 @@ import io.prestosql.spi.type.StandardTypes;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.lang.management.ManagementFactory;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public class IpLookup
 {
-    private static final String COUNTRY_DATA_FILE = "/usr/share/GeoIP/GeoIP.dat";
-    private static final String CITY_DATA_FILE = "/usr/share/GeoIP/GeoIPCity.dat";
-    private static final LookupService countryLookup = createLookup("/usr/share/GeoIP/GeoIP.dat");
-    private static final LookupService cityLookup = createLookup("/usr/share/GeoIP/GeoIPCity.dat");
+//    private static final String COUNTRY_DATA_FILE = "/usr/share/GeoIP/GeoIP.dat";
+//    private static final String CITY_DATA_FILE = "/usr/share/GeoIP/GeoIPCity.dat";
+
+//    private static final LookupService countryLookup = createLookup("/usr/share/GeoIP/GeoIP.dat");
+//    private static final LookupService cityLookup = createLookup("/usr/share/GeoIP/GeoIPCity.dat");
+
+//      private static final LookupService countryLookup = createLookup("/Users/happyelements/Documents/workspace/presto-plugin/presto-plugin-udf/src/main/resources/GeoIP.dat");
+//    private static final LookupService cityLookup = createLookup("/Users/happyelements/Documents/workspace/presto-plugin/presto-plugin-udf/src/main/resources/GeoIPCity.dat");
+
+    private static final LookupService countryLookup ;
+
+    private static final LookupService cityLookup ;
+
+
+    static {
+        try {
+            //当前进程id：
+            String pid = ManagementFactory.getRuntimeMXBean().getName();
+            Long tid = Thread.currentThread().getId();
+//            logger.error("now container pid is {} tid is {}", pid, tid);
+            File file_dir = new File(File.separator + "tmp" + File.separator + System.getProperty("user.name"));
+            file_dir.mkdirs();
+            File tmp_lastCountryDatFile = new File(file_dir, System.currentTimeMillis() + "." + pid + "." + tid + "GeoIP.dat");
+            File tmp_lastCityDatFile = new File(file_dir, System.currentTimeMillis() + "." + pid + "." + tid + "GeoIPCity.dat");
+            RandomAccessFile country_file = new RandomAccessFile(tmp_lastCountryDatFile, "rw");
+            RandomAccessFile city_file = new RandomAccessFile(tmp_lastCityDatFile, "rw");
+            InputStream inCountry = IpLookup.class.getClassLoader().getResourceAsStream("GeoIP.dat");
+            byte[] buffer = new byte[8096];
+            int offset = 0;
+            while ((offset = inCountry.read(buffer, 0, buffer.length)) > 0) {
+                country_file.write(buffer, 0, offset);
+            }
+            inCountry.close();
+            InputStream inCity = IpLookup.class.getClassLoader().getResourceAsStream("GeoIPCity.dat");
+            buffer = new byte[8096];
+            offset = 0;
+            while ((offset = inCity.read(buffer, 0, buffer.length)) > 0) {
+                city_file.write(buffer, 0, offset);
+            }
+            inCity.close();
+            buffer = null;
+            tmp_lastCityDatFile.delete();
+            tmp_lastCountryDatFile.delete();
+
+            country_file.seek(0);
+            city_file.seek(0);
+            countryLookup = createLookup(country_file);
+            cityLookup = createLookup(city_file);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
 
     private IpLookup()
     {
     }
 
-    private static LookupService createLookup(String dataFile)
+/*    private static LookupService createLookup(String dataFile)
     {
         try {
             return new LookupService(new File(dataFile));
         }
         catch (IOException e) {
+            throw new RuntimeException("counld not find Geo data file: " + dataFile, e);
+        }
+    }*/
+
+    private static LookupService createLookup(RandomAccessFile dataFile) {
+        try {
+            return new LookupService(dataFile);
+        } catch (IOException e) {
             throw new RuntimeException("counld not find Geo data file: " + dataFile, e);
         }
     }
@@ -86,7 +147,8 @@ public class IpLookup
                 }
                 return Slices.copiedBuffer((String) region, (Charset) StandardCharsets.UTF_8);
             }
+            default:
+                return Slices.copiedBuffer("bi_null", (Charset) StandardCharsets.UTF_8);
         }
-        return null;
     }
 }

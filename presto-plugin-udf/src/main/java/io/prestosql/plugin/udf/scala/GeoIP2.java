@@ -24,9 +24,7 @@ import java.net.UnknownHostException;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class GeoIP2
 {
@@ -41,8 +39,12 @@ public class GeoIP2
     /**
      * load GeoIP2-Country from  local file
      */
-    private static final DatabaseReader country = createDatabaseReader(new File("/usr/share/GeoIP/" + COUNTRY_DATA_FILE));
-    private static final DatabaseReader city = createDatabaseReader(new File("/usr/share/GeoIP/" + CITY_DATA_FILE));
+//    private static final DatabaseReader country = createDatabaseReader(new File("/usr/share/GeoIP/" + COUNTRY_DATA_FILE));
+//    private static final DatabaseReader city = createDatabaseReader(new File("/usr/share/GeoIP/" + CITY_DATA_FILE));
+
+
+    private static final DatabaseReader country =  createDatabaseReader(GeoIP2.class.getClassLoader().getResourceAsStream(COUNTRY_DATA_FILE));
+    private static final DatabaseReader city = createDatabaseReader(GeoIP2.class.getClassLoader().getResourceAsStream(CITY_DATA_FILE));
 
     /**
      *
@@ -61,9 +63,6 @@ public class GeoIP2
         }
     }
 
-/*
-    //    load GeoIP2-Country from  Resource
-    private static final DatabaseReader country = createDatabaseReader(GeoIP2.class.getClassLoader().getResourceAsStream(COUNTRY_DATA_FILE));
     private static DatabaseReader createDatabaseReader(InputStream dataFileIn)
     {
         try {
@@ -74,7 +73,7 @@ public class GeoIP2
         catch (IOException e) {
             throw new RuntimeException("counld not find Geo2  data file: ", e);
         }
-    }*/
+    }
 
 
     @Description(value = "country or city lookup from ip")
@@ -101,7 +100,7 @@ public class GeoIP2
                     String old_name = LookupService.countryMap.get(code);
                     return Slices.copiedBuffer(old_name == null ? response.getCountry().getName() : old_name, charset);
                 }
-                case "city": {
+              /*  case "city": {
                     CityResponse response = city.city(ipAddress);
                     return Slices.copiedBuffer((response.getCity().getName() == null ? "bi_null" : response.getCity().getName()), charset);
                 }
@@ -118,9 +117,9 @@ public class GeoIP2
                         region = regions.get(0).getName();
                     }
                     return Slices.copiedBuffer(region, charset);
-                }
+                }*/
                 default:
-                    return null;
+                    return Slices.copiedBuffer("bi_null", charset);
             }
         }
         catch (AddressNotFoundException addressNotFoundException) {
