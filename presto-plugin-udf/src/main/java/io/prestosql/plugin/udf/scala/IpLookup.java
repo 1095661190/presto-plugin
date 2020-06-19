@@ -110,9 +110,10 @@ public class IpLookup
         }
     }
 
-    @Description(value = "country or city lookup from ip")
+    /*@Description(value = "country or city lookup from ip")
     @ScalarFunction
     @SqlType(StandardTypes.VARCHAR)
+    */
     public static Slice geoip(@SqlType(StandardTypes.VARCHAR) Slice category, @SqlType(StandardTypes.VARCHAR) Slice ip)
     {
         if (category == null || ip == null) {

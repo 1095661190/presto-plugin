@@ -37,7 +37,7 @@ public class UdfPlugin
         return ImmutableSet.<Class<?>>builder()
                 .add(CastTimeZone.class)
                 .add(Unbase64.class)
-                .add(GeoIP2.class)
+                .add(GeoIP.class)
                 .build();
     }
 }

@@ -4,6 +4,9 @@ import com.maxmind.geoip.Location;
 import com.maxmind.geoip.LookupService;
 import com.maxmind.geoip.regionName;
 import io.airlift.slice.Slice;
+import io.airlift.slice.Slices;
+import io.prestosql.spi.function.Description;
+import io.prestosql.spi.function.ScalarFunction;
 import io.prestosql.spi.function.SqlType;
 import io.prestosql.spi.type.StandardTypes;
 
@@ -12,23 +15,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.lang.management.ManagementFactory;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class GeoIP_bak {
+public class GeoIP {
 
 //    static Logger logger = LoggerFactory.getLogger(GeoIP.class);
 
+    private static final Charset charset = StandardCharsets.UTF_8;
     private static final LookupService countryLookup;
 
     private static final LookupService cityLookup;
 
-    private static final GeoIP2_2_bak geoip2 = new GeoIP2_2_bak();
+    private static final GeoIP2 geoip2 = new GeoIP2();
 
     private static final Set<String> v4_categorys = new HashSet<>(5);
 
-    private GeoIP_bak() {
+    private GeoIP() {
     }
 
     static {
@@ -49,14 +55,14 @@ public class GeoIP_bak {
             File tmp_lastCityDatFile = new File(file_dir, System.currentTimeMillis() + "." + pid + "." + tid + "GeoIPCity.dat");
             RandomAccessFile country_file = new RandomAccessFile(tmp_lastCountryDatFile, "rw");
             RandomAccessFile city_file = new RandomAccessFile(tmp_lastCityDatFile, "rw");
-            InputStream inCountry = GeoIP_bak.class.getClassLoader().getResourceAsStream("GeoIP.dat");
+            InputStream inCountry = GeoIP.class.getClassLoader().getResourceAsStream("GeoIP.dat");
             byte[] buffer = new byte[8096];
             int offset = 0;
             while ((offset = inCountry.read(buffer, 0, buffer.length)) > 0) {
                 country_file.write(buffer, 0, offset);
             }
             inCountry.close();
-            InputStream inCity = GeoIP_bak.class.getClassLoader().getResourceAsStream("GeoIPCity.dat");
+            InputStream inCity = GeoIP.class.getClassLoader().getResourceAsStream("GeoIPCity.dat");
             buffer = new byte[8096];
             offset = 0;
             while ((offset = inCity.read(buffer, 0, buffer.length)) > 0) {
@@ -113,8 +119,10 @@ public class GeoIP_bak {
         return ipPattern_v4.matcher(ip).matches();
     }
 
-
-    public static String geoip(@SqlType(StandardTypes.VARCHAR) Slice category, @SqlType(StandardTypes.VARCHAR) Slice ip) {
+    @Description(value = "country or city lookup from ip")
+    @ScalarFunction
+    @SqlType(StandardTypes.VARCHAR)
+    public static Slice geoip(@SqlType(StandardTypes.VARCHAR) Slice category, @SqlType(StandardTypes.VARCHAR) Slice ip) {
         String categoryStr = category.toStringUtf8();
         String ipStr = ip.toStringUtf8();
         if (category == null || ip == null) {
@@ -133,32 +141,31 @@ public class GeoIP_bak {
                 String localRegion;
                 switch (categoryStr.toLowerCase()) {
                     case "country":
-                        return countryLookup.getCountry(ipStr).getName();
+                        return Slices.copiedBuffer(countryLookup.getCountry(ipStr).getName(), charset);
                     case "city":
                         location = cityLookup.getLocation(ipStr);
                         if (location == null) {
-                            return "bi_null";
+                            return Slices.copiedBuffer( "bi_null", charset);
                         }
-
-                        return (location.city == null) ? "bi_null" : location.city;
+                        return Slices.copiedBuffer(  (location.city == null) ? "bi_null" : location.city, charset);
                     case "latitude":
                         l0 = cityLookup.getLocation(ipStr);
-                        return (l0 == null) ? "-1" : ("" + l0.latitude);
+                        return Slices.copiedBuffer((String) (l0 == null ? "" + -1 : "" + l0.latitude), charset);
                     case "longitude":
                         l1 = cityLookup.getLocation(ipStr);
-                        return (l1 == null) ? "-1" : ("" + l1.longitude);
+                        return Slices.copiedBuffer((String) (l1 == null ? "" + -1 : "" + l1.longitude), charset);
                     case "region":
                         l11 = cityLookup.getLocation(ipStr);
                         if (l11 == null) {
-                            return "bi_null";
+                            return Slices.copiedBuffer( "bi_null", charset);
                         }
                         localRegion = regionName.regionNameByCode(l11.countryCode, l11.region);
-                        return (localRegion == null) ? "bi_null" : localRegion;
+                        return Slices.copiedBuffer( (localRegion == null) ? "bi_null" : localRegion, charset);
                     default:
-                        return "bi_null";
+                        return Slices.copiedBuffer( "bi_null", charset);
                 }
             } else {
-                return geoip2.evaluate(categoryStr, ipStr);
+                return Slices.copiedBuffer(geoip2.evaluate(categoryStr, ipStr), charset);
             }
 
         } catch (ArrayIndexOutOfBoundsException e) {
