@@ -24,7 +24,9 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Provides a lookup service for information based on an IP address. The
@@ -73,6 +75,8 @@ public class LookupService
      */
     private RandomAccessFile file;
     private final File databaseFile;
+
+    public  static Map<String,String > countryMap;
 
     /**
      * Information about the database.
@@ -217,6 +221,11 @@ public class LookupService
     static {
         if (countryCode.length != countryName.length) {
             throw new AssertionError("countryCode.length!=countryName.length");
+        }
+
+        countryMap = new HashMap<>();
+        for (int i = 0; i < countryCode.length; i++) {
+            countryMap.put(countryCode[i], countryName[i]);
         }
     }
 

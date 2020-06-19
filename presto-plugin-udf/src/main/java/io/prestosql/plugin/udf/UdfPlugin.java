@@ -15,6 +15,7 @@ package io.prestosql.plugin.udf;
 
 import com.google.common.collect.ImmutableSet;
 import io.prestosql.plugin.udf.scala.CastTimeZone;
+import io.prestosql.plugin.udf.scala.GeoIP2;
 import io.prestosql.plugin.udf.scala.IpLookup;
 import io.prestosql.plugin.udf.scala.Unbase64;
 import io.prestosql.spi.Plugin;
@@ -39,7 +40,7 @@ public class UdfPlugin
         return ImmutableSet.<Class<?>>builder()
                 .add(CastTimeZone.class)
                 .add(Unbase64.class)
-                .add(IpLookup.class)
+                .add(GeoIP2.class)
                 .build();
     }
 }
