@@ -8,7 +8,6 @@ Deploying a Custom Plugin
 
 mkdir /presto_home/plugin/udf
 
-emr-worker-64
 
 ```
 部署包  
@@ -24,9 +23,22 @@ jackson-databind-2.10.0.jar
 
 geoip2-0.8.0.jar
 maxmind-db-0.3.3.jar
+
+dom4j-2.1.1.jar
 ```
 
 
+
+deploy at presto master   
+```
+cat /etc/hosts |grep worker|awk '{print $3} > presto_worker
+for host in `cat presto_worker`
+do
+    ssh  $host  sudo mkdir /opt/apps/ecm/service/presto/331-1.0.1/package/presto-331-1.0.1/plugin/udf
+    ssh  $host  sudo  chown hadoop:hadoop /opt/apps/ecm/service/presto/331-1.0.1/package/presto-331-1.0.1/plugin/udf
+    scp -r /opt/apps/ecm/service/presto/331-1.0.1/package/presto-331-1.0.1/plugin/udf/*.jar   $host:/opt/apps/ecm/service/presto/331-1.0.1/package/presto-331-1.0.1/plugin/udf/
+done
+```
 
 In order for Presto to pick up the new plugin, you must restart Presto.
 
