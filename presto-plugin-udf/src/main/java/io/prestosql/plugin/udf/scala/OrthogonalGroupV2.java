@@ -45,14 +45,40 @@ public  class OrthogonalGroupV2{
 	 * key fileName#id
 	 */
 	HashMap<String,Integer> totalWeight = new HashMap<String,Integer>();
-	
+
+	public OrthogonalGroupV2()  {
+		Configuration config = new Configuration();
+		FileSystem hdfs;
+		FileStatus[] fs;
+		try {
+			//String path = "hdfs://tcdh-name-service-1/user/hive/common-lib/xml_config/";
+			//String path = "file:///Users/happyelements/eclipse-workspace/DWUDF/config/";
+			String path = "jfs://dp/user/hive/common-lib/xml_config/";
+			hdfs = FileSystem.get(URI.create(path),config);
+			fs = hdfs.listStatus(new Path(path));
+			Path[] listPath = FileUtil.stat2Paths(fs);
+			for(Path p : listPath) {
+				if(p.getName().endsWith(".xml")) {
+					this.initInfo(p.toString());
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+
 	//ai_yws
 	public void initInfo(String filePath)  {
 
 		Configuration config = new Configuration();
 
-		String file=filePath; //完整的文件路径 hdfs:///abc/abc/abc/aaa.xml 
-		String fileName=filePath.split("/")[filePath.split("/").length-1].split("\\.")[0]; //得到文件名aaa 注意文件名由  version_原文件名 组成
+		//完整的文件路径 hdfs:///abc/abc/abc/aaa.xml
+		String file=filePath;
+		//得到文件名aaa 注意文件名由  version_原文件名 组成
+		String fileName=filePath.split("/")[filePath.split("/").length-1].split("\\.")[0];
 		SAXReader reader = new SAXReader();
         Document document;
 		try {
@@ -61,7 +87,7 @@ public  class OrthogonalGroupV2{
 			InputStream is = fs.open(new Path(file));
 			//InputStream is = this.getClass().getClassLoader().getResourceAsStream("./"+fileName+".xml");
 
-			document = reader.read(is);  //.read(InputStream);
+			document = reader.read(is);
         
 	        Element root=document.getRootElement();
 	        List<Element> eleList = root.elements();
@@ -104,9 +130,12 @@ public  class OrthogonalGroupV2{
 		        		int weight=Integer.parseInt(str.split(";")[1]);
 		        		
 		        		if(weight>0) {
-		        			vchildList.add(str.split("=")[1]); //权重>0 的原始childN
-		        			weightSum+=weight; //一组权重之和
-		        			wigthList.add(weightSum); //每个有效的权重
+							//权重>0 的原始childN
+		        			vchildList.add(str.split("=")[1]);
+							//一组权重之和
+		        			weightSum+=weight;
+							//每个有效的权重
+		        			wigthList.add(weightSum);
 		        		}
 		        	}
 		        	
@@ -128,11 +157,13 @@ public  class OrthogonalGroupV2{
 			        	if(modeStr.toLowerCase().split(";")[0].contentEquals("orthogonal_group_v2")) {
 			        		List<Integer> tmWeight = new ArrayList<Integer>();
 			        		for( Integer i : wigthList) {
-			        			tmWeight.add(10000*i/weightSum);//每组的上界不包括
+								//每组的上界不包括
+			        			tmWeight.add(10000*i/weightSum);
 			        			validWeight.put(tmpKey,tmWeight);
 			        		}
 			        	} else if(modeStr.toLowerCase().split(";")[0].contentEquals("orthogonal_group")) {
-			        		validWeight.put(tmpKey,wigthList);//每组的上界不包括
+							//每组的上界不包括
+			        		validWeight.put(tmpKey,wigthList);
 			        	}
 		        	}
 		        	
@@ -145,28 +176,7 @@ public  class OrthogonalGroupV2{
 
 	}
 	
-	public OrthogonalGroupV2()  {
-		Configuration config = new Configuration();
-		FileSystem hdfs;
-		FileStatus[] fs;
-		try {
-			//String path = "hdfs://tcdh-name-service-1/user/hive/common-lib/xml_config/";
-			//String path = "file:///Users/happyelements/eclipse-workspace/DWUDF/config/";
-			String path = "jfs://dp/user/hive/common-lib/xml_config/";
-			hdfs = FileSystem.get(URI.create(path),config);
-			fs = hdfs.listStatus(new Path(path));
-			Path[] listPath = FileUtil.stat2Paths(fs);
-			for(Path p : listPath) {
-				if(p.getName().endsWith(".xml")) {
-					this.initInfo(p.toString());
-				}
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
+
 	
 	/**
 	 * https://config.happyelements.cn/config/list.do?appName=animal_mobile_prod0&fileName=ai_maintenance.xml
