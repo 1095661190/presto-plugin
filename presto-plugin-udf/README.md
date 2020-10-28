@@ -1,14 +1,14 @@
+# Deploying a Custom Plugin
 presto plugin  udf  
 
-doc  
+### doc  
 https://prestodb.io/docs/current/develop/spi-overview.html
 
 
-Deploying a Custom Plugin  
-
+### plugin path 
 mkdir /presto_home/plugin/udf
 
-
+### dependency
 ```
 部署包  
 presto-plugin-udf-331.jar  
@@ -29,7 +29,7 @@ dom4j-2.1.1.jar
 
 
 
-deploy at presto master   
+### deploy at presto master   
 ```
 cat /etc/hosts |grep worker|awk '{print $3} > presto_worker
 for host in `cat presto_worker`
@@ -40,6 +40,7 @@ do
 done
 ```
 
+###  restart 
 In order for Presto to pick up the new plugin, you must restart Presto.
 
 
