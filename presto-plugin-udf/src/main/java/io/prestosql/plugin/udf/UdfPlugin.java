@@ -38,6 +38,8 @@ public class UdfPlugin
                 .add(CastTimeZone.class)
                 .add(Unbase64.class)
                 .add(GeoIP.class)
+                .add(OrthogonalGroup.class)
+                .add(OrthogonalGroupV2.class)
                 .build();
     }
 }

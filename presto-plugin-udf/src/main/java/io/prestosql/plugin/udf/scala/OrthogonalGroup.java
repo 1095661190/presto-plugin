@@ -54,7 +54,7 @@ public class OrthogonalGroup {
 
 
     public OrthogonalGroup() {
-        // hdfs:///user/hive/common-lib/xml_config/level_config_group.xml
+        // jfs://dp/user/hive/common-lib/xml_config/level_config_group.xml
         String path = "jfs://dp/user/hive/common-lib/xml_config/";
         this.initInfo(path + "maintenance.xml");
         this.initInfo(path + "ai_maintenance.xml");
