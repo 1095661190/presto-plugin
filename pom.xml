@@ -1164,222 +1164,110 @@
   </dependencyManagement>
 
   <build>
-    <!--
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.antlr</groupId>
-          <artifactId>antlr4-maven-plugin</artifactId>
-          <version>${dep.antlr.version}</version>
-          <executions>
-            <execution>
-              <goals>
-                <goal>antlr4</goal>
-              </goals>
-            </execution>
-          </executions>
-          <configuration>
-            <visitor>true</visitor>
-          </configuration>
-        </plugin>
+<!--    <resources>
+    <resource>
+      <directory>lib</directory>
+      <includes>
+        <include>**/*.jar</include>
+      </includes>
+    </resource>
+  </resources>-->
 
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-shade-plugin</artifactId>
-          <version>3.1.1</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.skife.maven</groupId>
-          <artifactId>really-executable-jar-maven-plugin</artifactId>
-          <version>1.0.5</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <version>1.8</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>exec-maven-plugin</artifactId>
-          <version>1.6.0</version>
-        </plugin>
-
-        <plugin>
-          <groupId>io.airlift.maven.plugins</groupId>
-          <artifactId>sphinx-maven-plugin</artifactId>
-          <version>2.1</version>
-        </plugin>
-
-        <plugin>
-          <groupId>io.airlift.drift</groupId>
-          <artifactId>drift-maven-plugin</artifactId>
-          <version>${dep.drift.version}</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.gaul</groupId>
-          <artifactId>modernizer-maven-plugin</artifactId>
-          <configuration>
-            <violationsFiles>
-              <violationsFile>${air.main.basedir}/src/modernizer/violations.xml</violationsFile>
-            </violationsFiles>
-            <exclusionPatterns>
-              <exclusionPattern>org/joda/time/.*</exclusionPattern>
-            </exclusionPatterns>
-          </configuration>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-enforcer-plugin</artifactId>
-          <configuration>
-            <rules>
-              <requireUpperBoundDeps>
-                <excludes combine.children="append">
-                  &lt;!&ndash; TODO: fix this in Airlift resolver &ndash;&gt;
-                  <exclude>org.codehaus.plexus:plexus-utils</exclude>
-                  <exclude>com.google.guava:guava</exclude>
-                  <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
-                  <exclude>com.google.j2objc:j2objc-annotations</exclude>
-                </excludes>
-              </requireUpperBoundDeps>
-            </rules>
-          </configuration>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <configuration>
-            <preparationGoals>clean verify -DskipTests</preparationGoals>
-          </configuration>
-        </plugin>
-
-      </plugins>
-    </pluginManagement>
- -->
-
-    <plugins>
-      <plugin>
-        <groupId>io.prestosql</groupId>
-        <artifactId>presto-maven-plugin</artifactId>
-        <version>9</version>
-        <extensions>true</extensions>
-      </plugin>
-
-   <!--   <plugin>
-        <groupId>ca.vanzyl.maven.plugins</groupId>
-        <artifactId>provisio-maven-plugin</artifactId>
-        <version>1.0.7</version>
-        <extensions>true</extensions>
-      </plugin>-->
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration combine.children="append">
-          <fork>false</fork>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <includes>
-            <include>**/Test*.java</include>
-            <include>**/Benchmark*.java</include>
-          </includes>
-          <excludes>
-            <exclude>**/*jmhTest*.java</exclude>
-            <exclude>**/*jmhType*.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
-  <profiles>
-    <profile>
-      <id>tests-with-dependencies</id>
-      <!--
-          Assembles an uber (fat) jar that includes the entire "test" scope classpath for a module.
-
-          For example after running:
-
-          ./mvnw clean install -P tests-with-dependencies -pl presto-geospatial
-
-          The uber jar that contains the entire "test" scope class path of the "presto-geospatial"
-          is created and placed to that modules target directory:
-
-          ./presto-geospatial/target/presto-geospatial-0.197-SNAPSHOT-tests-with-dependencies.jar
-
-          Now using this jar we can easily run any benchmark from that module via command line:
-
-          java \
-            -cp ./presto-geospatial/target/presto-geospatial-*-tests-with-dependencies.jar \
-            io.prestosql.plugin.geospatial.BenchmarkSTIntersects
-      -->
-      <build>
         <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <configuration>
-            </configuration>
+
+
+
+          <!-- 先用presto-maven-plugin 打包生成 presto-plugin*.jar  和  presto-plugin-service*.jar
+          打开 presto-plugin-udf/pom  <packaging>presto-plugin</packaging>
+
+          再用maven-shade-plugin 生成shade jar
+          注释 presto-plugin-udf/pom  <packaging>presto-plugin</packaging>
+          -->
+
+    <!--      <plugin>
+            <groupId>io.prestosql</groupId>
+            <artifactId>presto-maven-plugin</artifactId>
+            <version>9</version>
+            <extensions>true</extensions>
+          </plugin>-->
+
+
+       <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>3.2.1</version>
             <executions>
               <execution>
-                <id>make-assembly</id>
                 <phase>package</phase>
                 <goals>
-                  <goal>single</goal>
+                  <goal>shade</goal>
                 </goals>
+                <configuration>
+                  <minimizeJar>false</minimizeJar>
+                  <shadedArtifactAttached>true</shadedArtifactAttached>
+
+                  <filters>
+                    <filter>
+                      <artifact>*:*</artifact>
+                      <excludes>
+                        <exclude>META-INF/DEPENDENCIES</exclude>
+                        <exclude>META-INF/LICENSE*</exclude>
+                        <exclude>META-INF/NOTICE*</exclude>
+                        <exclude>META-INF/MANIFEST*</exclude>
+                      </excludes>
+                    </filter>
+                  </filters>
+                </configuration>
               </execution>
             </executions>
           </plugin>
-        </plugins>
-      </build>
-    </profile>
 
-    <profile>
-      <id>errorprone-compiler-presto</id><!-- airbase defines "errorprone-compiler" profile but set up this ourselves -->
 
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.0</version>
-            <!--suppress MavenModelInspection -->
-            <configuration combine.children="merge">
-              <fork>true</fork>
-              <compilerArgs>
-                <arg>-XDcompilePolicy=simple</arg>
-                <!-- TODO enable more checks, i.e. remove "-XepDisableAllChecks" -->
-                <arg>-Xplugin:ErrorProne -XepExcludedPaths:.*/target/generated-(|test-)sources/.* -XepDisableAllChecks -Xep:MissingOverride:ERROR -Xep:ClassCanBeStatic:ERROR -Xep:ArrayToString:ERROR -Xep:GetClassOnClass:ERROR</arg>
-              </compilerArgs>
-              <annotationProcessorPaths>
-                <path>
-                  <groupId>com.google.errorprone</groupId>
-                  <artifactId>error_prone_core</artifactId>
-                  <version>${dep.errorprone.version}</version>
-                </path>
-              </annotationProcessorPaths>
+          <!--
+                    <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-compiler-plugin</artifactId>
+                      <configuration combine.children="append">
+                        <fork>false</fork>
+                      </configuration>
+                    </plugin>
+
+                    <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-surefire-plugin</artifactId>
+                      <configuration>
+                        <includes>
+                          <include>**/Test*.java</include>
+                          <include>**/Benchmark*.java</include>
+                        </includes>
+                        <excludes>
+                          <exclude>**/*jmhTest*.java</exclude>
+                          <exclude>**/*jmhType*.java</exclude>
+                        </excludes>
+                      </configuration>
+                    </plugin>
+   <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>make-assembly</id>
+              <phase>package</phase>
+              <goals>
+                <goal>single</goal>
+              </goals>
+            </execution>
+          </executions>
+
+          <configuration>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
             </configuration>
-          </plugin>
+          </plugin>-->
 
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-checkstyle-plugin</artifactId>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </plugin>
 
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
+
+    </plugins>
+  </build>
+
 </project>
