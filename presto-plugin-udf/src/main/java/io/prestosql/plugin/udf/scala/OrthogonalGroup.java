@@ -10,7 +10,9 @@ import java.net.URI;
 import java.io.*;
 
 
+import io.airlift.slice.Slice;
 import io.prestosql.plugin.udf.util.EncryptionByMD5;
+import io.prestosql.spi.classloader.ThreadContextClassLoader;
 import io.prestosql.spi.function.Description;
 import io.prestosql.spi.function.ScalarFunction;
 import io.prestosql.spi.function.SqlType;
@@ -30,41 +32,43 @@ import org.dom4j.io.SAXReader;
  */
 public class OrthogonalGroup {
 
+
     private static final Charset charset = StandardCharsets.UTF_8;
     /**
      * key: fileName#id
      * value: [nameStr,modeStr,aliasStr,childStr]
      */
-    HashMap<String, List<String>> eleDict = new HashMap<String, List<String>>();
+    static HashMap<String, List<String>> eleDict = new HashMap<String, List<String>>();
     /**
      * key: fileName#id
      * value: [chil1,chil2,child3,....] 实际的child 的key值
      */
-    HashMap<String, List<String>> validChild = new HashMap<String, List<String>>();
+    static HashMap<String, List<String>> validChild = new HashMap<String, List<String>>();
     /**
      * key: fileName#id
      * value: [weight1,weight2,weight3,....]//存放的是权重对应的分组边界
      */
-    HashMap<String, List<Integer>> validWeight = new HashMap<String, List<Integer>>();
+    static HashMap<String, List<Integer>> validWeight = new HashMap<String, List<Integer>>();
     /**
      * key fileName#id
      */
-    HashMap<String, Integer> totalWeight = new HashMap<String, Integer>();
+    static HashMap<String, Integer> totalWeight = new HashMap<String, Integer>();
 
 
+    public  OrthogonalGroup() {
+        try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(getClass().getClassLoader())) {
 
-    public OrthogonalGroup() {
-        // jfs://dp/user/hive/common-lib/xml_config/level_config_group.xml
-        String path = "jfs://dp/user/hive/common-lib/xml_config/";
-        this.initInfo(path + "maintenance.xml");
-        this.initInfo(path + "ai_maintenance.xml");
-        this.initInfo(path + "level_config_group.xml");
+            // jfs://dp/user/hive/common-lib/xml_config/level_config_group.xml
+            String path = "jfs://dp/user/hive/common-lib/xml_config/";
+            initInfo(path + "maintenance.xml");
+            initInfo(path + "ai_maintenance.xml");
+            initInfo(path + "level_config_group.xml");
+        }
     }
 
 
-
     //ai_yws
-    public void initInfo(String filePath) {
+    public static void initInfo(String filePath) {
 
         Configuration config = new Configuration();
 
@@ -170,26 +174,29 @@ public class OrthogonalGroup {
     }
 
 
-
-
-
     /**
      * https://config.happyelements.cn/config/list.do?appName=animal_mobile_prod0&fileName=ai_maintenance.xml
      * https://config.happyelements.cn/config/list.do?appName=animal_mobile_prod0&fileName=maintenance.xml
      * https://config.happyelements.cn/config/view.do?appName=animal_mobile_dev0&fileName=level_config_group.xml
      *
-     * @param fileName id 所在的文件名称 现在有3个  ai_maintenance.xml   maintenance.xml  level_config_group.xml（目前还没有具体实验）
-     * @param id       文件中具体的实验id
-     * @param uid      实际数据中的 gid or user_id or uid 同一个意思只是在不同表中的命名有差异
-     * @param flag     value:计算值，非分组信息    group: 最新配置文件的分组,注意返回的是分组中childNum 的Num  这样才能保证返回的信息都是数字
+     * @param fileNameStr id 所在的文件名称 现在有3个  ai_maintenance.xml   maintenance.xml  level_config_group.xml（目前还没有具体实验）
+     * @param id          文件中具体的实验id
+     * @param uidStr      实际数据中的 gid or user_id or uid 同一个意思只是在不同表中的命名有差异
+     * @param flagStr     value:计算值，非分组信息    group: 最新配置文件的分组,注意返回的是分组中childNum 的Num  这样才能保证返回的信息都是数字
      * @return 数值型
      */
     @Description(value = "")
     @ScalarFunction
-    @SqlType(StandardTypes.INTEGER)
-    public long orthogonal_group(@SqlType(StandardTypes.VARCHAR) String fileName, @SqlType(StandardTypes.INTEGER) Integer id, @SqlType(StandardTypes.VARCHAR) String uid, @SqlType(StandardTypes.VARCHAR) String flag) { //
+    @SqlType(StandardTypes.BIGINT)
+    //public static long orthogonal_group(@SqlType(StandardTypes.VARCHAR) String fileName, @SqlType(StandardTypes.INTEGER) Integer id, @SqlType(StandardTypes.VARCHAR) String uid, @SqlType(StandardTypes.VARCHAR) String flag) {
+    public static long orthogonal_group(@SqlType(StandardTypes.VARCHAR) Slice fileNameStr, @SqlType(StandardTypes.INTEGER) long id, @SqlType(StandardTypes.VARCHAR) Slice uidStr, @SqlType(StandardTypes.VARCHAR) Slice flagStr) {
 
-        String key = fileName + "#" + id.toString();
+
+        String fileName = fileNameStr.toStringUtf8();
+        String uid = uidStr.toStringUtf8();
+        String flag = flagStr.toStringUtf8();
+
+        String key = fileName + "#" + id;
 
         //如果文件及ID的组合不存在 返回 -1 表达不存在
         if (!eleDict.containsKey(key)) {
@@ -238,6 +245,7 @@ public class OrthogonalGroup {
                 }
             }
             return retVal;
+
         }
     }
 
