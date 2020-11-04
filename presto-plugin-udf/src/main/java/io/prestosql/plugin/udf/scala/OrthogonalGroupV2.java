@@ -46,8 +46,14 @@ public class OrthogonalGroupV2 {
      * key fileName#id
      */
     static HashMap<String, Integer> totalWeight = new HashMap<String, Integer>();
-    // jfs 目录最后修改时间
-    private long modificationTime;
+    /**
+     * jfs 目录最后修改时间
+     */
+    private static long lastModificationTime;
+
+    private static long lastTime = 0;
+
+    static String path = "jfs://dp/user/hive/common-lib/xml_config/";
 
     public OrthogonalGroupV2() {
 
@@ -80,9 +86,8 @@ public class OrthogonalGroupV2 {
     }
 
     public OrthogonalGroupV2(String path) {
-        try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(getClass().getClassLoader())) {
+     /*   try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(getClass().getClassLoader())) {
             System.out.println("orthogonal_group_v2()-------------------------------size=" + eleDict.size());
-
             Configuration config = new Configuration();
             config.set("fs.AbstractFileSystem.jfs.impl", "com.aliyun.emr.fs.jfs.JFS");
             config.set("fs.jfs.impl", "com.aliyun.emr.fs.jfs.JindoFileSystem");
@@ -91,11 +96,7 @@ public class OrthogonalGroupV2 {
             try {
                 hdfs = FileSystem.get(URI.create(path), config);
                 long modificationTime = hdfs.getFileStatus(new Path(URI.create(path))).getModificationTime();
-
                 fs = hdfs.listStatus(new Path(path));
-
-
-
                 Path[] listPath = FileUtil.stat2Paths(fs);
                 for (Path p : listPath) {
                     if (p.getName().endsWith(".xml")) {
@@ -107,30 +108,27 @@ public class OrthogonalGroupV2 {
                 e.printStackTrace();
             }
             System.out.println("orthogonal_group_v2()------------------------------- end  size=" + eleDict.size());
-
-        }
+        }*/
     }
 
 
-
     //ai_yws
-    public static void initInfo(String filePath,Configuration config ) {
+    public static void initInfo(String filePath, Configuration config) {
 
         //Configuration config = new Configuration();
 
         //完整的文件路径 hdfs:///abc/abc/abc/aaa.xml
-        String file = filePath;
         //得到文件名aaa 注意文件名由  version_原文件名 组成
         String fileName = filePath.split("/")[filePath.split("/").length - 1].split("\\.")[0];
         SAXReader reader = new SAXReader();
         Document document;
         try {
-            FileSystem fs = FileSystem.get(URI.create(file), config);
+            FileSystem fs = FileSystem.get(URI.create(filePath), config);
             //FileSystem.setDefaultUri(config, "jfs://dp");
 
 
             //读取文件
-            InputStream is = fs.open(new Path(file));
+            InputStream is = fs.open(new Path(filePath));
             //InputStream is = this.getClass().getClassLoader().getResourceAsStream("./"+fileName+".xml");
 
             document = reader.read(is);
@@ -239,14 +237,51 @@ public class OrthogonalGroupV2 {
     @ScalarFunction
     @SqlType(StandardTypes.BIGINT)
     public static long orthogonal_group_v2(@SqlType(StandardTypes.VARCHAR) Slice fileNameStr, @SqlType(StandardTypes.INTEGER) long id, @SqlType(StandardTypes.VARCHAR) Slice uidStr, @SqlType(StandardTypes.VARCHAR) Slice flagStr, @SqlType(StandardTypes.INTEGER) long fileVersion) {
-        System.out.println("orthogonal_group_v2");
+        try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(OrthogonalGroupV2.class.getClassLoader())) {
+            System.out.println("orthogonal_group_v2()--------size=" + eleDict.size());
+            Configuration config = new Configuration();
+            config.set("fs.AbstractFileSystem.jfs.impl", "com.aliyun.emr.fs.jfs.JFS");
+            config.set("fs.jfs.impl", "com.aliyun.emr.fs.jfs.JindoFileSystem");
+            FileSystem hdfs;
+            FileStatus[] fs;
+            try {
+                hdfs = FileSystem.get(URI.create(path), config);
+                long modificationTime = hdfs.getFileStatus(new Path(URI.create(path))).getModificationTime();
 
-        String path = "jfs://dp/user/hive/common-lib/xml_config/";
-        OrthogonalGroupV2 orthogonalGroupV2 = new OrthogonalGroupV2(path);
+                System.out.println("orthogonal_group_v2()--------modificationTime=" + modificationTime);
 
-        //Configuration config = new Configuration();
+                long currentTime = System.currentTimeMillis();
+                if (lastTime == 0) {
+                    lastTime = currentTime;
+                }
+//            System.out.println(System.currentTimeMillis());
+//            if (modificationTime != lastModificationTime) {
 
-        System.out.println("orthogonal_group_v2-------------------------------size="+eleDict.size());
+                if (currentTime - lastTime > 60 * 60 * 1000 || eleDict.size() == 0) {
+                    lastTime = currentTime;
+                    fs = hdfs.listStatus(new Path(path));
+                    Path[] listPath = FileUtil.stat2Paths(fs);
+                    for (Path p : listPath) {
+                        if (p.getName().endsWith(".xml")) {
+                            initInfo(p.toString(), config);
+                        }
+                    }
+                } else {
+                    System.out.println("orthogonal_group_v2()--------no update");
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            System.out.println("orthogonal_group_v2()--------end  size=" + eleDict.size());
+        }
+
+
+//        String path = "jfs://dp/user/hive/common-lib/xml_config/";
+//        OrthogonalGroupV2 orthogonalGroupV2 = new OrthogonalGroupV2(path);
+
+
+        System.out.println("orthogonal_group_v2--------size=" + eleDict.size());
 
         String fileName = fileNameStr.toStringUtf8();
         String uid = uidStr.toStringUtf8();
@@ -254,7 +289,7 @@ public class OrthogonalGroupV2 {
 
         String key = fileVersion + "_" + fileName + "#" + id;
 
-        System.out.println("orthogonal_group_v2=====key="+key);
+        System.out.println("orthogonal_group_v2=====key=" + key);
 
         //如果文件及ID的组合不存在，返回 -1 表达不存在
         if (!eleDict.containsKey(key)) {

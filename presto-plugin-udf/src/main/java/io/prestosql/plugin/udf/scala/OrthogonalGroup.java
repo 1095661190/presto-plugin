@@ -53,17 +53,20 @@ public class OrthogonalGroup {
      * key fileName#id
      */
     static HashMap<String, Integer> totalWeight = new HashMap<String, Integer>();
-
+    /**
+     * xml last update time
+     */
+    private static long lastTime = 0;
 
     public  OrthogonalGroup() {
-        try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(getClass().getClassLoader())) {
+      /*  try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(getClass().getClassLoader())) {
 
             // jfs://dp/user/hive/common-lib/xml_config/level_config_group.xml
             String path = "jfs://dp/user/hive/common-lib/xml_config/";
             initInfo(path + "maintenance.xml");
             initInfo(path + "ai_maintenance.xml");
             initInfo(path + "level_config_group.xml");
-        }
+        }*/
     }
 
 
@@ -190,7 +193,20 @@ public class OrthogonalGroup {
     @SqlType(StandardTypes.BIGINT)
     //public static long orthogonal_group(@SqlType(StandardTypes.VARCHAR) String fileName, @SqlType(StandardTypes.INTEGER) Integer id, @SqlType(StandardTypes.VARCHAR) String uid, @SqlType(StandardTypes.VARCHAR) String flag) {
     public static long orthogonal_group(@SqlType(StandardTypes.VARCHAR) Slice fileNameStr, @SqlType(StandardTypes.INTEGER) long id, @SqlType(StandardTypes.VARCHAR) Slice uidStr, @SqlType(StandardTypes.VARCHAR) Slice flagStr) {
+        try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(OrthogonalGroup.class.getClassLoader())) {
 
+            long currentTime = System.currentTimeMillis();
+            if (lastTime == 0) {
+                lastTime = currentTime;
+            }
+            if (currentTime - lastTime > 60 * 60 * 1000||eleDict.size()==0) {
+                lastTime = currentTime;
+                String path = "jfs://dp/user/hive/common-lib/xml_config/";
+                initInfo(path + "maintenance.xml");
+                initInfo(path + "ai_maintenance.xml");
+                initInfo(path + "level_config_group.xml");
+            }
+        }
 
         String fileName = fileNameStr.toStringUtf8();
         String uid = uidStr.toStringUtf8();
