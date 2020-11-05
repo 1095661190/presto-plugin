@@ -55,61 +55,9 @@ public class OrthogonalGroupV2 {
 
     static String path = "jfs://dp/user/hive/common-lib/xml_config/";
 
-    public OrthogonalGroupV2() {
+    public OrthogonalGroupV2() { }
 
-     /*   try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(getClass().getClassLoader())) {
-            String path = "jfs://dp/user/hive/common-lib/xml_config/";
-            Configuration config = new Configuration();
-            config.set("fs.AbstractFileSystem.jfs.impl", "com.aliyun.emr.fs.jfs.JFS");
-            config.set("fs.jfs.impl", "com.aliyun.emr.fs.jfs.JindoFileSystem");
-            FileSystem hdfs;
-            FileStatus[] fs;
-            try {
-                //String path = "hdfs://tcdh-name-service-1/user/hive/common-lib/xml_config/";
-                //String path = "file:///Users/happyelements/eclipse-workspace/DWUDF/config/";
-                //String path = "jfs://dp/user/hive/common-lib/xml_config/";
-                hdfs = FileSystem.get(URI.create(path), config);
-                fs = hdfs.listStatus(new Path(path));
-                Path[] listPath = FileUtil.stat2Paths(fs);
-                for (Path p : listPath) {
-                    System.out.println("orthogonal_group_v2()------------------------------- "+p.getName());
-                    if (p.getName().endsWith(".xml")) {
-                        initInfo(p.toString(), config);
-                    }
-                }
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            System.out.println("orthogonal_group_v2()------------------------------- end  size=" + eleDict.size());
-        }*/
-    }
 
-    public OrthogonalGroupV2(String path) {
-     /*   try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(getClass().getClassLoader())) {
-            System.out.println("orthogonal_group_v2()-------------------------------size=" + eleDict.size());
-            Configuration config = new Configuration();
-            config.set("fs.AbstractFileSystem.jfs.impl", "com.aliyun.emr.fs.jfs.JFS");
-            config.set("fs.jfs.impl", "com.aliyun.emr.fs.jfs.JindoFileSystem");
-            FileSystem hdfs;
-            FileStatus[] fs;
-            try {
-                hdfs = FileSystem.get(URI.create(path), config);
-                long modificationTime = hdfs.getFileStatus(new Path(URI.create(path))).getModificationTime();
-                fs = hdfs.listStatus(new Path(path));
-                Path[] listPath = FileUtil.stat2Paths(fs);
-                for (Path p : listPath) {
-                    if (p.getName().endsWith(".xml")) {
-                        initInfo(p.toString(), config);
-                    }
-                }
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            System.out.println("orthogonal_group_v2()------------------------------- end  size=" + eleDict.size());
-        }*/
-    }
 
 
     //ai_yws
@@ -248,16 +196,14 @@ public class OrthogonalGroupV2 {
                 hdfs = FileSystem.get(URI.create(path), config);
                 long modificationTime = hdfs.getFileStatus(new Path(URI.create(path))).getModificationTime();
 
-                System.out.println("orthogonal_group_v2()--------modificationTime=" + modificationTime);
 
                 long currentTime = System.currentTimeMillis();
                 if (lastTime == 0) {
                     lastTime = currentTime;
                 }
-//            System.out.println(System.currentTimeMillis());
-//            if (modificationTime != lastModificationTime) {
 
                 if (currentTime - lastTime > 60 * 60 * 1000 || eleDict.size() == 0) {
+                    System.out.println("update v2  xml   at time="+currentTime);
                     lastTime = currentTime;
                     fs = hdfs.listStatus(new Path(path));
                     Path[] listPath = FileUtil.stat2Paths(fs);
@@ -267,21 +213,13 @@ public class OrthogonalGroupV2 {
                         }
                     }
                 } else {
-                    System.out.println("orthogonal_group_v2()--------no update");
                 }
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            System.out.println("orthogonal_group_v2()--------end  size=" + eleDict.size());
         }
 
-
-//        String path = "jfs://dp/user/hive/common-lib/xml_config/";
-//        OrthogonalGroupV2 orthogonalGroupV2 = new OrthogonalGroupV2(path);
-
-
-        System.out.println("orthogonal_group_v2--------size=" + eleDict.size());
 
         String fileName = fileNameStr.toStringUtf8();
         String uid = uidStr.toStringUtf8();
@@ -289,7 +227,6 @@ public class OrthogonalGroupV2 {
 
         String key = fileVersion + "_" + fileName + "#" + id;
 
-        System.out.println("orthogonal_group_v2=====key=" + key);
 
         //如果文件及ID的组合不存在，返回 -1 表达不存在
         if (!eleDict.containsKey(key)) {

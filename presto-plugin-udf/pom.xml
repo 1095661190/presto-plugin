@@ -53,10 +53,10 @@
               <artifactId>javax.inject</artifactId>
           </dependency>
   -->
-   <!--     <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>-->
+        <!--     <dependency>
+                 <groupId>com.fasterxml.jackson.core</groupId>
+                 <artifactId>jackson-databind</artifactId>
+             </dependency>-->
 
 
         <!-- for testing -->
@@ -81,10 +81,10 @@
                  <artifactId>node</artifactId>
              </dependency>-->
 
-     <!--   <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-        </dependency>-->
+        <!--   <dependency>
+               <groupId>javax.servlet</groupId>
+               <artifactId>javax.servlet-api</artifactId>
+           </dependency>-->
 
         <!--      <dependency>
           <groupId>com.thoughtworks.xstream</groupId>
@@ -120,10 +120,10 @@
             <artifactId>presto-main</artifactId>
         </dependency>
 
-     <!--   <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>-->
+        <!--   <dependency>
+               <groupId>com.google.guava</groupId>
+               <artifactId>guava</artifactId>
+           </dependency>-->
 
         <dependency>
             <groupId>commons-codec</groupId>
@@ -131,7 +131,7 @@
             <version>1.9</version>
         </dependency>
 
-       <!-- support ipv6 -->
+        <!-- support ipv6 -->
         <dependency>
             <groupId>com.maxmind.geoip2</groupId>
             <artifactId>geoip2</artifactId>
@@ -154,20 +154,20 @@
         </dependency>
 
 
- <!--       <dependency>
-            <groupId>hadoop-apache</groupId>
-            <artifactId>hadoop</artifactId>
-            <version>3.2.9</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/hadoop-apache-3.2.0-9.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>smartdata-jindofs</groupId>
-            <artifactId>smartdata</artifactId>
-            <version>3.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/smartdata-jindofs-3.0.0.jar</systemPath>
-        </dependency>-->
+        <!--       <dependency>
+                   <groupId>hadoop-apache</groupId>
+                   <artifactId>hadoop</artifactId>
+                   <version>3.2.9</version>
+                   <scope>system</scope>
+                   <systemPath>${project.basedir}/lib/hadoop-apache-3.2.0-9.jar</systemPath>
+               </dependency>
+               <dependency>
+                   <groupId>smartdata-jindofs</groupId>
+                   <artifactId>smartdata</artifactId>
+                   <version>3.0.0</version>
+                   <scope>system</scope>
+                   <systemPath>${project.basedir}/lib/smartdata-jindofs-3.0.0.jar</systemPath>
+               </dependency>-->
 
 
         <dependency>
@@ -214,5 +214,40 @@
 
 
     </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <minimizeJar>false</minimizeJar>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/DEPENDENCIES</exclude>
+                                        <exclude>META-INF/LICENSE*</exclude>
+                                        <exclude>META-INF/NOTICE*</exclude>
+                                        <exclude>META-INF/MANIFEST*</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

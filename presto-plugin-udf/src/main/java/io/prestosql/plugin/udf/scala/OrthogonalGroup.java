@@ -59,14 +59,6 @@ public class OrthogonalGroup {
     private static long lastTime = 0;
 
     public  OrthogonalGroup() {
-      /*  try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(getClass().getClassLoader())) {
-
-            // jfs://dp/user/hive/common-lib/xml_config/level_config_group.xml
-            String path = "jfs://dp/user/hive/common-lib/xml_config/";
-            initInfo(path + "maintenance.xml");
-            initInfo(path + "ai_maintenance.xml");
-            initInfo(path + "level_config_group.xml");
-        }*/
     }
 
 
@@ -200,6 +192,7 @@ public class OrthogonalGroup {
                 lastTime = currentTime;
             }
             if (currentTime - lastTime > 60 * 60 * 1000||eleDict.size()==0) {
+                System.out.println("update v1  xml   at time="+currentTime);
                 lastTime = currentTime;
                 String path = "jfs://dp/user/hive/common-lib/xml_config/";
                 initInfo(path + "maintenance.xml");
