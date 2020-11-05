@@ -31,10 +31,10 @@ dom4j-2.1.1.jar
 
 ### deploy at presto master   
 ```
-cat /etc/hosts |grep worker|awk '{print $3} > presto_worker
+cat /etc/hosts |grep worker|awk '{print $3}' > presto_worker
 for host in `cat presto_worker`
 do
-    ssh  $host  sudo mkdir /opt/apps/ecm/service/presto/331-1.0.1/package/presto-331-1.0.1/plugin/udf
+    ssh  $host  sudo mkdir -p /opt/apps/ecm/service/presto/331-1.0.1/package/presto-331-1.0.1/plugin/udf
     ssh  $host  sudo  chown hadoop:hadoop /opt/apps/ecm/service/presto/331-1.0.1/package/presto-331-1.0.1/plugin/udf
     scp -r /opt/apps/ecm/service/presto/331-1.0.1/package/presto-331-1.0.1/plugin/udf/*.jar   $host:/opt/apps/ecm/service/presto/331-1.0.1/package/presto-331-1.0.1/plugin/udf/
 done
