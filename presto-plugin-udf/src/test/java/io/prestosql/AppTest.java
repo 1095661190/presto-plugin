@@ -13,10 +13,16 @@
  */
 package io.prestosql;
 
-public class AppTest
-{
-    public void shouldAnswerWithTrue()
-    {
+public class AppTest {
+
+
+    public static void main() {
         System.out.print("aaa");
+        String helloWorldTest = null;
+        AppTest appTest = new AppTest();
+    }
+
+    public String test() {
+        return null;
     }
 }
