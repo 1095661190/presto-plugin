@@ -55,9 +55,8 @@ public class OrthogonalGroupV2 {
 
     static String path = "jfs://dp/user/hive/common-lib/xml_config/";
 
-    public OrthogonalGroupV2() { }
-
-
+    public OrthogonalGroupV2() {
+    }
 
 
     //ai_yws
@@ -185,25 +184,25 @@ public class OrthogonalGroupV2 {
     @ScalarFunction
     @SqlType(StandardTypes.BIGINT)
     public static long orthogonal_group_v2(@SqlType(StandardTypes.VARCHAR) Slice fileNameStr, @SqlType(StandardTypes.INTEGER) long id, @SqlType(StandardTypes.VARCHAR) Slice uidStr, @SqlType(StandardTypes.VARCHAR) Slice flagStr, @SqlType(StandardTypes.INTEGER) long fileVersion) {
-        try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(OrthogonalGroupV2.class.getClassLoader())) {
-            System.out.println("orthogonal_group_v2()--------size=" + eleDict.size());
-            Configuration config = new Configuration();
-            config.set("fs.AbstractFileSystem.jfs.impl", "com.aliyun.emr.fs.jfs.JFS");
-            config.set("fs.jfs.impl", "com.aliyun.emr.fs.jfs.JindoFileSystem");
-            FileSystem hdfs;
-            FileStatus[] fs;
-            try {
-                hdfs = FileSystem.get(URI.create(path), config);
-                long modificationTime = hdfs.getFileStatus(new Path(URI.create(path))).getModificationTime();
 
+        long currentTime = System.currentTimeMillis();
+        if (lastTime == 0) {
+            lastTime = currentTime;
+        }
 
-                long currentTime = System.currentTimeMillis();
-                if (lastTime == 0) {
-                    lastTime = currentTime;
-                }
+        if (currentTime - lastTime > 60 * 60 * 1000 || eleDict.size() == 0) {
+            try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(OrthogonalGroupV2.class.getClassLoader())) {
+                Configuration config = new Configuration();
+                config.set("fs.AbstractFileSystem.jfs.impl", "com.aliyun.emr.fs.jfs.JFS");
+                config.set("fs.jfs.impl", "com.aliyun.emr.fs.jfs.JindoFileSystem");
+                FileSystem hdfs;
+                FileStatus[] fs;
 
-                if (currentTime - lastTime > 60 * 60 * 1000 || eleDict.size() == 0) {
-                    System.out.println("update v2  xml   at time="+currentTime);
+                try {
+                    hdfs = FileSystem.get(URI.create(path), config);
+                    //long modificationTime = hdfs.getFileStatus(new Path(URI.create(path))).getModificationTime();
+
+                    System.out.println("update v2  xml   at time=" + currentTime);
                     lastTime = currentTime;
                     fs = hdfs.listStatus(new Path(path));
                     Path[] listPath = FileUtil.stat2Paths(fs);
@@ -212,11 +211,12 @@ public class OrthogonalGroupV2 {
                             initInfo(p.toString(), config);
                         }
                     }
-                } else {
+
+
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
         }
 
@@ -274,6 +274,7 @@ public class OrthogonalGroupV2 {
                     }
                 }
             }
+
             return retVal;
         }
     }
