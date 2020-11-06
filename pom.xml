@@ -1177,65 +1177,8 @@
 
 
 
-          <!-- 先用presto-maven-plugin 打包生成 presto-plugin*.jar  和  presto-plugin-service*.jar
-          打开 presto-plugin-udf/pom  <packaging>presto-plugin</packaging>
-
-          再用maven-shade-plugin 生成shade jar
-          注释 presto-plugin-udf/pom  <packaging>presto-plugin</packaging>
-          -->
-
-    <!--      <plugin>
-            <groupId>io.prestosql</groupId>
-            <artifactId>presto-maven-plugin</artifactId>
-            <version>9</version>
-            <extensions>true</extensions>
-          </plugin>-->
 
 
-
-
-
-          <!--
-                    <plugin>
-                      <groupId>org.apache.maven.plugins</groupId>
-                      <artifactId>maven-compiler-plugin</artifactId>
-                      <configuration combine.children="append">
-                        <fork>false</fork>
-                      </configuration>
-                    </plugin>
-
-                    <plugin>
-                      <groupId>org.apache.maven.plugins</groupId>
-                      <artifactId>maven-surefire-plugin</artifactId>
-                      <configuration>
-                        <includes>
-                          <include>**/Test*.java</include>
-                          <include>**/Benchmark*.java</include>
-                        </includes>
-                        <excludes>
-                          <exclude>**/*jmhTest*.java</exclude>
-                          <exclude>**/*jmhType*.java</exclude>
-                        </excludes>
-                      </configuration>
-                    </plugin>
-   <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>make-assembly</id>
-              <phase>package</phase>
-              <goals>
-                <goal>single</goal>
-              </goals>
-            </execution>
-          </executions>
-
-          <configuration>
-              <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-              </descriptorRefs>
-            </configuration>
-          </plugin>-->
 
 
 
