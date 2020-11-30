@@ -40,8 +40,15 @@ do
 done
 ```
 
+
 ###  restart 
 In order for Presto to pick up the new plugin, you must restart Presto.
+
+
+### 扩容后同步
+source  emr-header-4   10.24.5.125
+同步presto plugin  udf 目录
+/usr/lib/presto-current/plugin/udf
 
 
 
