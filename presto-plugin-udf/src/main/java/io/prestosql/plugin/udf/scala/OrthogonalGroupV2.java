@@ -186,11 +186,8 @@ public class OrthogonalGroupV2 {
     public static long orthogonal_group_v2(@SqlType(StandardTypes.VARCHAR) Slice fileNameStr, @SqlType(StandardTypes.INTEGER) long id, @SqlType(StandardTypes.VARCHAR) Slice uidStr, @SqlType(StandardTypes.VARCHAR) Slice flagStr, @SqlType(StandardTypes.INTEGER) long fileVersion) {
 
         long currentTime = System.currentTimeMillis();
-        if (lastTime == 0) {
-            lastTime = currentTime;
-        }
 
-        if (currentTime - lastTime > 60 * 60 * 1000 || eleDict.size() == 0) {
+        if (lastTime == 0 || currentTime - lastTime > 60 * 60 * 1000 || eleDict.size() == 0) {
             try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(OrthogonalGroupV2.class.getClassLoader())) {
                 Configuration config = new Configuration();
                 config.set("fs.AbstractFileSystem.jfs.impl", "com.aliyun.emr.fs.jfs.JFS");

@@ -188,10 +188,8 @@ public class OrthogonalGroup {
         try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(OrthogonalGroup.class.getClassLoader())) {
 
             long currentTime = System.currentTimeMillis();
-            if (lastTime == 0) {
-                lastTime = currentTime;
-            }
-            if (currentTime - lastTime > 60 * 60 * 1000||eleDict.size()==0) {
+
+            if (lastTime == 0 || currentTime - lastTime > 60 * 60 * 1000 || eleDict.size() == 0) {
                 System.out.println("update v1  xml   at time="+currentTime);
                 lastTime = currentTime;
                 String path = "jfs://dp/user/hive/common-lib/xml_config/";
