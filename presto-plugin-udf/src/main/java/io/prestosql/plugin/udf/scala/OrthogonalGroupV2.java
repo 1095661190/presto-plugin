@@ -188,6 +188,7 @@ public class OrthogonalGroupV2 {
         long currentTime = System.currentTimeMillis();
 
         if (lastTime == 0 || currentTime - lastTime > 60 * 60 * 1000 || eleDict.size() == 0) {
+            lastTime = currentTime;
             try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(OrthogonalGroupV2.class.getClassLoader())) {
                 Configuration config = new Configuration();
                 config.set("fs.AbstractFileSystem.jfs.impl", "com.aliyun.emr.fs.jfs.JFS");
@@ -198,9 +199,7 @@ public class OrthogonalGroupV2 {
                 try {
                     hdfs = FileSystem.get(URI.create(path), config);
                     //long modificationTime = hdfs.getFileStatus(new Path(URI.create(path))).getModificationTime();
-
                     System.out.println("update v2  xml   at time=" + currentTime);
-                    lastTime = currentTime;
                     fs = hdfs.listStatus(new Path(path));
                     Path[] listPath = FileUtil.stat2Paths(fs);
                     for (Path p : listPath) {
