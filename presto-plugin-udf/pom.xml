@@ -11,7 +11,7 @@
 
     <artifactId>presto-plugin-udf</artifactId>
 
-    <packaging>presto-plugin</packaging>
+    <!--<packaging>presto-plugin</packaging>-->
 
     <!--    <properties>
             <air.main.basedir>${project.parent.basedir}</air.main.basedir>
@@ -153,6 +153,11 @@
             <groupId>org.dom4j</groupId>
             <artifactId>dom4j</artifactId>
         </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.48</version>
+        </dependency>
 
 
         <!--       <dependency>
@@ -226,17 +231,17 @@
 
             再用maven-shade-plugin 生成shade jar
             注释 presto-plugin-udf/pom  <packaging>presto-plugin</packaging>
+
+            新增udf更新一个shade jar包就ok了
             -->
 
-
-            <plugin>
+       <!--     <plugin>
                 <groupId>io.prestosql</groupId>
                 <artifactId>presto-maven-plugin</artifactId>
                 <version>9</version>
                 <extensions>true</extensions>
-            </plugin>
+            </plugin>-->
 
-<!--
 
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
@@ -267,7 +272,7 @@
                                 </execution>
                             </executions>
                         </plugin>
--->
+
 
 
         </plugins>
