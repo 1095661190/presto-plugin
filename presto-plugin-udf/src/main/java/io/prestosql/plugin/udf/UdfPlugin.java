@@ -40,6 +40,7 @@ public class UdfPlugin
                 .add(GeoIP.class)
                 .add(OrthogonalGroup.class)
                 .add(OrthogonalGroupV2.class)
+                .add(ABTestGroup.class)
                 .add(HiveMd5.class)
                 .build();
     }
