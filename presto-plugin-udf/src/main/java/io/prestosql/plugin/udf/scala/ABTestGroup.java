@@ -53,7 +53,6 @@ public class ABTestGroup {
      * @param password
      */
     public static void initInfo(String url, String user, String password) {
-        System.out.println("initInfo..............");
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -171,15 +170,7 @@ public class ABTestGroup {
     @SqlType(StandardTypes.VARCHAR)
     public static Slice abtest_group(@SqlType(StandardTypes.INTEGER) long experiment_id, @SqlType(StandardTypes.INTEGER) long version, @SqlType(StandardTypes.VARCHAR) Slice uid, @SqlType(StandardTypes.VARCHAR) Slice flag) {
         long currentTime = System.currentTimeMillis();
-
-        System.out.println("abtest_group..............");
-
         if (lastTime == 0 || currentTime - lastTime > 60 * 60 * 1000||groupMap.size()==0) {
-
-            System.out.println("into  init ..............");
-
-            System.out.println("groupMap size="+groupMap.size());
-
             lastTime = currentTime;
             String url = "jdbc:mysql://rm-wz903o9d17p893q75.mysql.rds.aliyuncs.com:3306/experiment?characterEncoding=utf8&useSSL=false";
             String user = "experiment_test";
@@ -191,13 +182,9 @@ public class ABTestGroup {
        */
             initInfo(url, user, password);
         }
-
         String  group="-1";
         String tmpKey = experiment_id + "#" + version;
-
         String group_info=groupMap.get(tmpKey);
-
-        System.out.println("group_info.........="+group_info);
 
         if(group_info==null){
             return Slices.copiedBuffer( group, charset);
