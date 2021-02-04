@@ -23,7 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MaintenanceGroup {
-    public MaintenanceGroup() {}
+    public MaintenanceGroup() {
+    }
 
     static String path = "jfs://dp/user/hive/common-lib/configxml/";
     static String suffix = "_maintenance.xml";
@@ -168,71 +169,73 @@ public class MaintenanceGroup {
     @ScalarFunction
     @SqlType(StandardTypes.BIGINT)
     public static long maintenance_group(@SqlType(StandardTypes.INTEGER) long experiment_id, @SqlType(StandardTypes.VARCHAR) Slice uid_str, @SqlType(StandardTypes.VARCHAR) Slice flag_str, @SqlType(StandardTypes.VARCHAR) Slice date_str) {
-
         String date = date_str.toStringUtf8();
         String flag = flag_str.toStringUtf8();
         String uid = uid_str.toStringUtf8();
 
-        if (eleDict.isEmpty()) {
-            try {
-                //无使用价值  只是防止异常情况eleDict为空的情况下  每次调用evaluate()加载xml文件
-                List value_test=new ArrayList();
-                eleDict.put("test",value_test);
-                initInfo(date);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return -1;
-            }
-        }
-
         String fileName = date + suffix;
         String key = fileName + "#" + experiment_id;
-
-
-        //文件及ID的组合不存在 返回 -1
+        //xml文件及ID的组合不存在 返回 -1
         if (!eleDict.containsKey(key)) {
-            //System.out.println(String.format("experiment_id %s not exist in file %s", experiment_id,fileName));
-            return -1;
-        } else {
-            List<String> eleInfo = eleDict.get(key);
-            String nameStr = eleInfo.get(0);
-            String modeStr = eleInfo.get(1);
-            String aliasStr = eleInfo.get(2);
-            String childStr = eleInfo.get(3);
+            initInfo(date);
 
-
-            String result = null;
-            if (modeStr.startsWith(MODE_KEY_PRE) && aliasStr.contentEquals("")) {
-                result = EncryptionByMD5.getMD5((nameStr + EncryptionByMD5.getMD5(childStr.getBytes()) + uid).getBytes());
-            } else if (modeStr.startsWith(MODE_KEY_PRE)) {
-                result = EncryptionByMD5.getMD5((aliasStr + uid).getBytes());
-            }
-            long val = Long.parseLong(result.substring(24), 16);
-            long retVal = -1;
-            List<Integer> weightList = validWeight.get(key);
-            int weightSize = weightList.size();
-            List<String> childList = validChild.get(key);
-            int totalw = totalWeight.get(key);
-            long rr = 100000;
-            if (modeStr.toLowerCase().split(";")[0].contentEquals(MODE_KEY_PRE)) {
-                rr = val % totalw;
-            }
-            if (modeStr.toLowerCase().split(";")[0].contentEquals(MODE_KEY_PRE_V2)) {
-                rr = val % 10000;
-            }
-
-            for (int i = 0; i < weightSize; i++) {
-                if (rr < weightList.get(i)) {
-                    if (flag.contentEquals("value")) {
-                        retVal = rr;
-                        return retVal;
-                    } else {
-                        retVal = Long.parseLong(childList.get(i).substring(5));
-                        return retVal;
+            if(eleDict.size()>5000){
+                List<String> list=new ArrayList<String>();
+                for (String map_key : eleDict.keySet()) {
+                    if(!map_key.contains(date)){
+                        list.add(map_key);
                     }
                 }
+                for (String str :list){
+                    eleDict.remove(str);
+                }
+
             }
+        }
+
+        long retVal = -1;
+        List<String> eleInfo = eleDict.get(key);
+        if (eleInfo.size() == 0) {
             return retVal;
         }
+        String nameStr = eleInfo.get(0);
+        String modeStr = eleInfo.get(1);
+        String aliasStr = eleInfo.get(2);
+        String childStr = eleInfo.get(3);
+
+
+        String result = null;
+        if (modeStr.startsWith(MODE_KEY_PRE) && aliasStr.contentEquals("")) {
+            result = EncryptionByMD5.getMD5((nameStr + EncryptionByMD5.getMD5(childStr.getBytes()) + uid).getBytes());
+        } else if (modeStr.startsWith(MODE_KEY_PRE)) {
+            result = EncryptionByMD5.getMD5((aliasStr + uid).getBytes());
+        }
+        long val = Long.parseLong(result.substring(24), 16);
+
+        List<Integer> weightList = validWeight.get(key);
+        int weightSize = weightList.size();
+        List<String> childList = validChild.get(key);
+        int totalw = totalWeight.get(key);
+        long rr = 100000;
+        if (modeStr.toLowerCase().split(";")[0].contentEquals(MODE_KEY_PRE)) {
+            rr = val % totalw;
+        }
+        if (modeStr.toLowerCase().split(";")[0].contentEquals(MODE_KEY_PRE_V2)) {
+            rr = val % 10000;
+        }
+
+        for (int i = 0; i < weightSize; i++) {
+            if (rr < weightList.get(i)) {
+                if (flag.contentEquals("value")) {
+                    retVal = rr;
+                    return retVal;
+                } else {
+                    retVal = Long.parseLong(childList.get(i).substring(5));
+                    return retVal;
+                }
+            }
+        }
+        return retVal;
+
     }
 }
