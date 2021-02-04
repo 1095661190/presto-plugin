@@ -23,8 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MaintenanceGroup {
-    public MaintenanceGroup() {
-    }
+    public MaintenanceGroup() {}
 
     static String path = "jfs://dp/user/hive/common-lib/configxml/";
     static String suffix = "_maintenance.xml";
@@ -174,9 +173,11 @@ public class MaintenanceGroup {
         String flag = flag_str.toStringUtf8();
         String uid = uid_str.toStringUtf8();
 
-
         if (eleDict.isEmpty()) {
             try {
+                //无使用价值  只是防止异常情况eleDict为空的情况下  每次调用evaluate()加载xml文件
+                List value_test=new ArrayList();
+                eleDict.put("test",value_test);
                 initInfo(date);
             } catch (Exception e) {
                 e.printStackTrace();
