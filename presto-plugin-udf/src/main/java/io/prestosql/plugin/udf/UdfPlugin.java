@@ -42,6 +42,7 @@ public class UdfPlugin
                 .add(OrthogonalGroupV2.class)
                 .add(ABTestGroup.class)
                 .add(HiveMd5.class)
+                .add(MaintenanceGroup.class)
                 .build();
     }
 }
