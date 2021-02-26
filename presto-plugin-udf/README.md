@@ -4,9 +4,12 @@ presto plugin  udf
 ### doc  
 https://prestodb.io/docs/current/develop/spi-overview.html
 
+### wiki
+http://wiki.happyelements.net/display/BI/presto
+
 
 ### plugin path 
-mkdir /presto_home/plugin/udf
+mkdir /$PRESTO_HOME/plugin/udf
 
 ### dependency
 ```
@@ -34,9 +37,9 @@ dom4j-2.1.1.jar
 cat /etc/hosts |grep worker|awk '{print $3}' > presto_worker
 for host in `cat presto_worker`
 do
-    ssh  $host  sudo mkdir -p /opt/apps/ecm/service/presto/331-1.0.1/package/presto-331-1.0.1/plugin/udf
-    ssh  $host  sudo  chown hadoop:hadoop /opt/apps/ecm/service/presto/331-1.0.1/package/presto-331-1.0.1/plugin/udf
-    scp -r /opt/apps/ecm/service/presto/331-1.0.1/package/presto-331-1.0.1/plugin/udf/*.jar   $host:/opt/apps/ecm/service/presto/331-1.0.1/package/presto-331-1.0.1/plugin/udf/
+    ssh  $host  sudo mkdir -p /usr/lib/presto-current/plugin/udf/
+    ssh  $host  sudo  chown hadoop:hadoop /usr/lib/presto-current/plugin/udf/
+    scp -r /usr/lib/presto-current/plugin/udf/*.jar   $host:/usr/lib/presto-current/plugin/udf/
 done
 ```
 
