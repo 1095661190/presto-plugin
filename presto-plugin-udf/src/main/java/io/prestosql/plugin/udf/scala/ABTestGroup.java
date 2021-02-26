@@ -22,7 +22,9 @@ import java.util.HashMap;
 
 public class ABTestGroup {
 
-    public ABTestGroup(){}
+    public ABTestGroup() {
+    }
+
     private static final Charset charset = StandardCharsets.UTF_8;
     private static long lastTime = 0;
 
@@ -48,6 +50,7 @@ public class ABTestGroup {
      * group_percents   代表其所在分组的百分比  <br/>
      * display_ids    [group_id1,group_id2,group_id3]<br/>
      * display_ids 和 group_percents 组装为数组后关系一一对应 通过 group_percents[index]查找display_ids[index]
+     *
      * @param url
      * @param user
      * @param password
@@ -127,7 +130,7 @@ public class ABTestGroup {
 
                 String tmpKey = experiment_id + "#" + version;
 
-                String[] group_percents=group_percent.split(",");
+                String[] group_percents = group_percent.split(",");
 
                 /**
                  * 记录分组的区间范围 [0-9999]
@@ -135,31 +138,31 @@ public class ABTestGroup {
                  * 对应数据区间 [0,4999] (4999,7499] (7499,9999]
                  * 第一个区间为闭区间  后面为左开右闭区间
                  */
-                double[] group_range =new double[group_percents.length];
-                double total=0;
-                for (int i=0;i<group_percents.length;i++){
-                    double value=Double.valueOf(group_percents[i]);
-                    total+=value;
-                    double range=10000*(total/100d)-1;
-                    group_range[i]=range;
+                double[] group_range = new double[group_percents.length];
+                double total = 0;
+                for (int i = 0; i < group_percents.length; i++) {
+                    double value = Double.valueOf(group_percents[i]);
+                    total += value;
+                    double range = 10000 * (total / 100d) - 1;
+                    group_range[i] = range;
                 }
 
-                String group_info=hash+"#"+display_id;
-                groupMap.put(tmpKey,group_info);
-                rangeMap.put(tmpKey,group_range);
+                String group_info = hash + "#" + display_id;
+                groupMap.put(tmpKey, group_info);
+                rangeMap.put(tmpKey, group_range);
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            closeAll(connection,preparedStatement,resultSet);
+            closeAll(connection, preparedStatement, resultSet);
         }
 
     }
 
 
-
     /**
      * 解析abtest用户的分组id
+     *
      * @param experiment_id 实验experiment_id
      * @param version       版本号 每变更一次版本号加1
      * @param uid           用户id 不同表中命名不同 gid or user_id or uid
@@ -170,47 +173,47 @@ public class ABTestGroup {
     @SqlType(StandardTypes.VARCHAR)
     public static Slice abtest_group(@SqlType(StandardTypes.INTEGER) long experiment_id, @SqlType(StandardTypes.INTEGER) long version, @SqlType(StandardTypes.VARCHAR) Slice uid, @SqlType(StandardTypes.VARCHAR) Slice flag) {
         long currentTime = System.currentTimeMillis();
-        if (lastTime == 0 || currentTime - lastTime > 60 * 60 * 1000||groupMap.size()==0) {
+        if (lastTime == 0 || currentTime - lastTime > 60 * 60 * 1000 || groupMap.size() == 0) {
             lastTime = currentTime;
-            String url = "jdbc:mysql://rm-wz903o9d17p893q75.mysql.rds.aliyuncs.com:3306/experiment?characterEncoding=utf8&useSSL=false";
-            String user = "experiment_test";
-            String password = "WC5g3d6hB49fgzIh";
 
-        /*String url = "jdbc:mysql://rm-wz979x250y3723a8q123930.mysql.rds.aliyuncs.com:3306/experiment?characterEncoding=utf8&useSSL=false";
-        String user = "experiment_reader";
-        String password = "hkQeoPRhhiWG5qXHQqtD";
-       */
+            /*String url = "jdbc:mysql://rm-wz903o9d17p893q75.mysql.rds.aliyuncs.com:3306/experiment?characterEncoding=utf8&useSSL=false";
+            String user = "experiment_test";
+            String password = "WC5g3d6hB49fgzIh";*/
+
+            String url = "jdbc:mysql://rm-wz979x250y3723a8q123930.mysql.rds.aliyuncs.com:3306/experiment?characterEncoding=utf8&useSSL=false";
+            String user = "experiment_reader";
+            String password = "hkQeoPRhhiWG5qXHQqtD";
+
             initInfo(url, user, password);
         }
-        String  group="-1";
+        String group = "-1";
         String tmpKey = experiment_id + "#" + version;
-        String group_info=groupMap.get(tmpKey);
+        String group_info = groupMap.get(tmpKey);
 
-        if(group_info==null){
-            return Slices.copiedBuffer( group, charset);
+        if (group_info == null) {
+            return Slices.copiedBuffer(group, charset);
         }
 
-        String hash=group_info.split("#")[0];
-        long retVal= getGroup(uid.toStringUtf8(), hash, segment);
+        String hash = group_info.split("#")[0];
+        long retVal = getGroup(uid.toStringUtf8(), hash, segment);
 
         if (flag.toStringUtf8().contentEquals("value")) {
-            return Slices.copiedBuffer( retVal+"", charset);
+            return Slices.copiedBuffer(retVal + "", charset);
         } else {
-            String display_id=group_info.split("#")[1];
-            String[] display_arrs=display_id.split(",");
-            double[] range=rangeMap.get(tmpKey);
+            String display_id = group_info.split("#")[1];
+            String[] display_arrs = display_id.split(",");
+            double[] range = rangeMap.get(tmpKey);
 
             Arrays.sort(range);
             //如果key在数组中，则返回搜索值的索引
             //否则返回 -1或 -(插入点 + 1)  插入点:索引键将要插入数组的那一点，即第一个大于该key的元素的索引。
-            int postion = Arrays.binarySearch(range,retVal);
-            int index=postion>=0?postion:-postion-1;
-            group =display_arrs[index];
+            int postion = Arrays.binarySearch(range, retVal);
+            int index = postion >= 0 ? postion : -postion - 1;
+            group = display_arrs[index];
         }
-        return Slices.copiedBuffer( group, charset);
+        return Slices.copiedBuffer(group, charset);
 
     }
-
 
 
     public static void closeAll(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet) {
