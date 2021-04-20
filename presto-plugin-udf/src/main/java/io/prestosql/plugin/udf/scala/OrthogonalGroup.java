@@ -27,6 +27,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 
+
 /**
  * description  http://wiki.happyelements.net/pages/viewpage.action?pageId=60860019
  */
@@ -164,6 +165,12 @@ public class OrthogonalGroup {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+            initInfo(filePath);
         }
 
     }
@@ -230,7 +237,9 @@ public class OrthogonalGroup {
             List<Integer> weightList = validWeight.get(key);
             int weightSize = weightList.size();
             List<String> childList = validChild.get(key);
-
+            if (!totalWeight.containsKey(key)) {
+                return -1;
+            }
             int totalw = totalWeight.get(key);
 
             long rr = 100000;
