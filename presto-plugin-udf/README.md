@@ -108,3 +108,21 @@ source  emr-header-4   10.24.5.125
         select maintenance_group( experiment_id, uid  ,flag , date ) as type 
         experiment_id   uid   flag  参数含义请参考 abtesting
         date 日期  格式 yyyy-MM-dd  日期必须<=当前日期  xml 文件暂定 保留前500个
+        
+        
+        
+- ipv4 
+       
+        使用阿里 云解析DNS 产品  IP地理位置库 解析IP
+        [阿里云  IP地理位置库  帮助文档](https://help.aliyun.com/document_detail/153347.html?spm=a2c1d.8251892.help.dexternal.2b2c5b76H5HFJu) 
+        依赖 
+            ipv4.dex离线库文件  
+            ipv4.lic授权文件   
+            离线SDK文件 v1.20210430161742.jar (从阿里云下载手动添加到项目)
+        
+        存放路径   jfs://dp/user/hive/common-lib/ali_ip
+        
+        注意：
+            1、每月更新 ipv4.dex、ipv4.lic
+            2、仅支持ipv4
+            
