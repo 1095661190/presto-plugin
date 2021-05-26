@@ -10,7 +10,7 @@
 
   <groupId>io.prestosql</groupId>
   <artifactId>presto-plugin</artifactId>
-  <version>331</version>
+  <version>337</version>
   <packaging>pom</packaging>
 
   <name>presto-plugin</name>
