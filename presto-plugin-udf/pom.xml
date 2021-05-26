@@ -159,6 +159,12 @@
             <version>5.1.48</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.68</version>
+        </dependency>
+
 
         <!--       <dependency>
                    <groupId>hadoop-apache</groupId>
