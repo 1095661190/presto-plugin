@@ -224,6 +224,21 @@
             <version>1.7.10</version>
         </dependency>
 
+        <!-- 从阿里云的ip地理位置库下载依赖的jar
+         mvn install:install-file -Dfile=/Users/happyelements/Documents/workspace/presto-plugin/presto-plugin-udf/lib/v1.20210430161742.jar  -DgroupId=com.ali.geoip -DartifactId=geoip -Dversion=1.0 -Dpackaging=jar-->
+        <dependency>
+            <groupId>com.ali.geoip</groupId>
+            <artifactId>geoip</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+     <!--   <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-mapreduce-client-jobclient</artifactId>
+            <version>2.8.5</version>
+            <scope>provided</scope>
+        </dependency>-->
+
 
     </dependencies>
 
@@ -238,47 +253,50 @@
             再用maven-shade-plugin 生成shade jar
             注释 presto-plugin-udf/pom  <packaging>presto-plugin</packaging>
 
-            新增udf更新一个shade jar包就ok了
+            新增udf更新
+            //presto-plugin-udf-331.jar
+            presto-plugin-udf-331-shaded.jar
+
+
+
             -->
 
-       <!--     <plugin>
-                <groupId>io.prestosql</groupId>
-                <artifactId>presto-maven-plugin</artifactId>
-                <version>9</version>
-                <extensions>true</extensions>
-            </plugin>-->
+             <!--    <plugin>
+                     <groupId>io.prestosql</groupId>
+                     <artifactId>presto-maven-plugin</artifactId>
+                     <version>9</version>
+                     <extensions>true</extensions>
+                 </plugin>-->
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <minimizeJar>false</minimizeJar>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
 
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-shade-plugin</artifactId>
-                            <version>3.2.1</version>
-                            <executions>
-                                <execution>
-                                    <phase>package</phase>
-                                    <goals>
-                                        <goal>shade</goal>
-                                    </goals>
-                                    <configuration>
-                                        <minimizeJar>false</minimizeJar>
-                                        <shadedArtifactAttached>true</shadedArtifactAttached>
-
-                                        <filters>
-                                            <filter>
-                                                <artifact>*:*</artifact>
-                                                <excludes>
-                                                    <exclude>META-INF/DEPENDENCIES</exclude>
-                                                    <exclude>META-INF/LICENSE*</exclude>
-                                                    <exclude>META-INF/NOTICE*</exclude>
-                                                    <exclude>META-INF/MANIFEST*</exclude>
-                                                </excludes>
-                                            </filter>
-                                        </filters>
-                                    </configuration>
-                                </execution>
-                            </executions>
-                        </plugin>
-
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/DEPENDENCIES</exclude>
+                                        <exclude>META-INF/LICENSE*</exclude>
+                                        <exclude>META-INF/NOTICE*</exclude>
+                                        <exclude>META-INF/MANIFEST*</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
 
         </plugins>
